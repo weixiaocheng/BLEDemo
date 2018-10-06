@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  SubViewController.h
 //  BlueToothDemo
 //
 //  Created by mac on 2018/10/6.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ViewController : UIViewController
+@interface SubViewController : UIViewController
 
 @end
 

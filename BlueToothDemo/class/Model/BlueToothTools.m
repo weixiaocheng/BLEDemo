@@ -191,7 +191,7 @@ static BlueToothTools *_toolsmanger;
         //保存characteristic特征值对象
         //以后发信息也是用这个uuid
         _charecteristicl = characteristic;
-        
+        [_discoverdPeripheral readValueForCharacteristic:characteristic];
         [_discoverdPeripheral setNotifyValue:YES forCharacteristic:characteristic];
         //        }
     }

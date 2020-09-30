@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04F4D05A2493120200E5C947 /* AnalysisTools.m in Sources */ = {isa = PBXBuildFile; fileRef = 04F4D0592493120200E5C947 /* AnalysisTools.m */; };
 		04FA8FC921687C0F009E6D71 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 04FA8FC821687C0F009E6D71 /* AppDelegate.m */; };
 		04FA8FD121687C10009E6D71 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 04FA8FD021687C10009E6D71 /* Assets.xcassets */; };
 		04FA8FD421687C10009E6D71 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 04FA8FD221687C10009E6D71 /* LaunchScreen.storyboard */; };
@@ -38,6 +39,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		04F4D0582493120200E5C947 /* AnalysisTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AnalysisTools.h; sourceTree = "<group>"; };
+		04F4D0592493120200E5C947 /* AnalysisTools.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AnalysisTools.m; sourceTree = "<group>"; };
 		04FA8FC421687C0F009E6D71 /* BlueToothDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BlueToothDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		04FA8FC721687C0F009E6D71 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		04FA8FC821687C0F009E6D71 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -169,6 +172,8 @@
 			children = (
 				04FA8FFD21687D31009E6D71 /* BlueToothTools.h */,
 				04FA8FFE21687D31009E6D71 /* BlueToothTools.m */,
+				04F4D0582493120200E5C947 /* AnalysisTools.h */,
+				04F4D0592493120200E5C947 /* AnalysisTools.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -309,6 +314,7 @@
 				04FA900A2168E234009E6D71 /* SubViewController.m in Sources */,
 				04FA8FC921687C0F009E6D71 /* AppDelegate.m in Sources */,
 				04FA9007216889CC009E6D71 /* BLETableview.m in Sources */,
+				04F4D05A2493120200E5C947 /* AnalysisTools.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -472,7 +478,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = A877RB4F96;
+				DEVELOPMENT_TEAM = LLQV2RLCDT;
 				INFOPLIST_FILE = BlueToothDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -490,7 +496,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = A877RB4F96;
+				DEVELOPMENT_TEAM = LLQV2RLCDT;
 				INFOPLIST_FILE = BlueToothDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = (

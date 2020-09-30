@@ -16,6 +16,9 @@
 @property (nonatomic, assign) BluetoothFailState bluetoothFailState;
 @property (nonatomic, assign) BluetoothState bluetoothState;
 
+/// 记录需要发送消息的对象特性的服务
+@property (nonatomic, strong) CBCharacteristic *mesgCb;
+
 @end
 
 static BlueToothTools *_toolsmanger;
@@ -149,24 +152,35 @@ static BlueToothTools *_toolsmanger;
     if ([self.delegate respondsToSelector:@selector(blueToothToolsdidDiscoverServicesPeripheral:)]) {
         [self.delegate blueToothToolsdidDiscoverServicesPeripheral:peripheral];
     }
-  /*
+  
     //遍历所有service
     for (CBService *service in peripheral.services)
     {
-        //        NSString *uuid = [NSString stringWithFormat:@"%@",service.UUID];
+                NSString *uuid = [NSString stringWithFormat:@"%@",service.UUID];
         NSLog(@"服务%@",service.UUID);
-        
-        
-        //        //找到你需要的servicesuuid
-        //        [CBUUID UUIDWithCFUUID:(CFUUIDRef)externalCBUUID]
-        //        if ([uuid isEqualToString: @"Battery"])
-        //        {
+                //找到你需要的servicesuuid
+//        [CBUUID UUIDWithCFUUID:(CFUUIDRef)externalCBUUID]
+        if ([uuid isEqualToString: @"FFF0"])
+        {
+            self.mesgCb = service;
+            NSString *str = @"680300006B16";
+            NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+//            [peripheral writeValue:data forDescriptor:service];
         //监听它
-        [peripheral discoverCharacteristics:nil forService:service];
-        //        }
+//        [peripheral discoverCharacteristics:nil forService:service];
+        }
     }
-   */
+   
+    
+    
+    
     NSLog(@"此时链接的peripheral：%@",peripheral);
+}
+
+- (void)sendeData: (NSString *)datastring
+{
+    NSLog(@"dataString : %@", datastring);
+    
 }
 
 // 连接上 设备 对应的服务
@@ -207,22 +221,84 @@ static BlueToothTools *_toolsmanger;
     }
     
     Byte *testByte = (Byte *)[characteristic.value bytes];
-    NSLog(@"testByte : %s",testByte);
+    NSLog(@"testByte : %@",characteristic.value);
+    
+    NSLog(@"%@", [self parseByteArray2HexString:testByte]);
+    NSData *data = [NSData dataWithBytes:testByte length:sizeof(testByte)];
     
     NSString *uuid = [NSString stringWithFormat:@"%@",characteristic.UUID];
-    NSString *stringFromData = [[NSString alloc] initWithData:characteristic.value encoding:NSUTF8StringEncoding];
-    NSLog(@"stringFromData : %@ value : %@ ",stringFromData, characteristic.value);
+//    NSString *stringFromData = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSLog(@"DataToHexStr : %@",[self DataToHexStr:characteristic.value]);
+//    NSLog(@"stringFromData : %@ value : %@ ",stringFromData, characteristic.value);
     NSString * hexString  = [NSString stringWithFormat:@"%@", characteristic.value];
     hexString = [hexString stringByReplacingOccurrencesOfString:@"<" withString:@""];
     hexString = [hexString stringByReplacingOccurrencesOfString:@">" withString:@""];
-    hexString = [hexString stringByReplacingOccurrencesOfString:@" " withString:@""];
+//    hexString = [hexString stringByReplacingOccurrencesOfString:@" " withString:@""];
     if ([uuid isEqualToString:@"Battery Level"]) {
         NSLog(@"当前电量是  %ld",(long)[self numberWithHexString:hexString]);
         self.printString = [NSString stringWithFormat:@"当前电量是  %ld",(long)[self numberWithHexString:hexString]];
         return;
     }
+    NSString *stringdata = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    NSLog(@"stringdata : %@",stringdata);
+    
     NSLog(@"收到的数据：%@ \n UUID : %@ \n str: %@ ",[self stringFromHexString:hexString], uuid,hexString);
+    Byte ctrl = *(testByte+1) & 0x7f;
+    NSLog(@"ctrl : %hhu",ctrl);
     self.printString = [NSString stringWithFormat:@"收到的数据：%@ \n UUID : %@ \n str: %@ ",[self stringFromHexString:hexString], uuid,hexString];
+    switch (ctrl) {
+            case 0x03:
+            {
+                int power = *(testByte+4);
+                NSLog(@"电量 %d", power);
+                break;
+            }
+            case 0x05:
+            {
+                //读取提醒开关
+                Byte type = *(testByte+4);
+                if(type == 0x00)
+                {
+                    break;
+                }
+                int attention_type = *(testByte+5);
+                Byte onoff = *(testByte+6);
+                switch (attention_type)
+                {
+                case 1:
+                {
+                    NSLog(@"防丢 %02x", onoff);
+                   
+                    break;
+                }
+                case 2:
+                {
+                    NSLog(@"短信 %02x", onoff);
+                   
+                    break;
+                }
+                case 3:
+                {
+                    NSLog(@"电话 %02x", onoff);
+                  
+                    break;
+                }
+                default:
+                    break;
+                }
+                
+            }
+            case 0x20:
+            {
+                //校时
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+    
 }
 
 //十六进制转换为普通字符串的。
@@ -249,5 +325,64 @@ static BlueToothTools *_toolsmanger;
     return unicodeString;
 }
 
+
+-(NSString *) parseByteArray2HexString:(Byte[]) bytes
+{
+    NSMutableString *hexStr = [[NSMutableString alloc]init];
+
+    int i = 0;
+
+    if(bytes)
+
+    {
+
+        while (bytes[i] != '\0')
+
+        {
+
+            NSString *hexByte = [NSString stringWithFormat:@"%x",bytes[i] & 0xff];///16进制数
+
+            if([hexByte length]==1)
+
+                [hexStr appendFormat:@"0%@", hexByte];
+
+            else
+
+                [hexStr appendFormat:@"%@", hexByte];
+
+            
+
+            i++;
+
+        }
+
+    }
+
+    NSLog(@"bytes 的16进制数为:%@",hexStr);
+
+    return hexStr;
+ 
+}
+
+- (NSString *)DataToHexStr:(NSData *)data {
+    if (!data || [data length] == 0) {
+        return @"";
+    }
+    NSMutableString *string = [[NSMutableString alloc] initWithCapacity:[data length]];
+    
+    [data enumerateByteRangesUsingBlock:^(const void *bytes, NSRange byteRange, BOOL *stop) {
+        unsigned char *dataBytes = (unsigned char*)bytes;
+        for (NSInteger i = 0; i < byteRange.length; i++) {
+            NSString *hexStr = [NSString stringWithFormat:@"%x", (dataBytes[i]) & 0xff];
+            if ([hexStr length] == 2) {
+                [string appendString:hexStr];
+            } else {
+                [string appendFormat:@"0%@", hexStr];
+            }
+        }
+    }];
+    
+    return string;
+}
 
 @end
